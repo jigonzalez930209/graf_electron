@@ -10,7 +10,9 @@
     "isolatedModules": true,
     "types": ["node"],
     "baseUrl": ".",
+    "jsx": "react-jsx",
+    "esModuleInterop": true
   },
-  "include": ["src/**/*.ts", "../../types/**/*.d.ts"],
-  "exclude": ["**/*.spec.ts", "**/*.test.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "../../types/**/*.d.ts"],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
 }
