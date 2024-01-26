@@ -5,5 +5,10 @@ directories:
 files:
   - packages/**/dist/**
 
-linux:
-  target: deb
+# linux:
+#   target: deb
+
+win:
+  target: nsis
+
+target: nsis
