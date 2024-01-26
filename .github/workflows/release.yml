@@ -1,21 +1,12 @@
 name: Release
 on:
-  workflow_call:
-    inputs:
-      dry-run:
-        description: 'Compiles the app but not upload artifacts to distribution server'
-        default: false
-        required: false
-        type: boolean
+ push:
+   branches:
+     - main
 
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: true
-
-
-defaults:
-  run:
-    shell: 'bash'
 
 
 jobs:
@@ -34,17 +25,22 @@ jobs:
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
 
-      - uses: actions/setup-node@v4
+      - name: Install Node and NPM
+        uses: actions/setup-node@v4
         with:
-          cache: 'npm'
+          node-version: 20
 
-      - run: npm ci
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - run: pnpm install
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
 
-      - run: npm run build
+      - run: pnpm run build
 
-      - name: Compile artifacts ${{ inputs.dry-run && '' || 'and upload them to github release' }}
+      - name: Compile artifacts 'and upload them to github release'
         # I use this action because it is capable of retrying multiple times if there are any issues with the distribution server
         uses: nick-fields/retry@v2
         with:
@@ -55,7 +51,7 @@ jobs:
           shell: 'bash'
           # Due to this issue https://github.com/electron-userland/electron-builder/issues/6411 the build with npx when rebuilding native dependencies hangs forever
           # see https://github.com/cawa-93/vite-electron-builder/pull/953
-          command: ./node_modules/.bin/electron-builder --config electron-builder.yml --publish ${{ inputs.dry-run && 'never' || 'always' }}
+          command: electron-builder --config electron-builder.yml --publish always
         env:
           # Code Signing params
           # See https://www.electron.build/code-signing
