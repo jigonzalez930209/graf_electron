@@ -2,6 +2,7 @@
 # It is from here that all other workflows are launched.
 on:
   workflow_dispatch:
+
   push:
     branches:
       - main
